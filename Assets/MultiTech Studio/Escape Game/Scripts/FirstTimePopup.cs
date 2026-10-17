@@ -22,11 +22,12 @@ public class FirstTimePopup : MonoBehaviour
 
         if (hasAccepted)
         {
-            // যদি আগেই Accept করা থাকে, তবে পপআপ হাইড থাকবে
+            // যদি আগেই Accept করা থাকে, তবে পপআপ হাইড থাকবে এবং সাউন্ড অন থাকবে
             if (_popupPanel != null)
             {
                 _popupPanel.SetActive(false);
             }
+            AudioListener.pause = false;
         }
         else
         {
@@ -35,6 +36,9 @@ public class FirstTimePopup : MonoBehaviour
             {
                 _popupPanel.SetActive(true);
             }
+
+            // পপআপ স্ক্রিন থাকা অবস্থায় গেমের সব সাউন্ড বন্ধ বা পজ থাকবে
+            AudioListener.pause = true;
 
             // Accept বাটনে লিসেনার যুক্ত করা
             if (_acceptButton != null)
@@ -49,7 +53,7 @@ public class FirstTimePopup : MonoBehaviour
     /// </summary>
     private void OnAcceptButtonClicked()
     {
-        // PlayerPrefs-এ সেভ করে রাখা হলো যে Accept করা হয়ে গেছে (1 = True)
+        // PlayerPrefs-এ সেভ করে রাখা হলো যে Accept করা হয়ে গেছে (1 = True)
         PlayerPrefs.SetInt(_saveKey, 1);
         PlayerPrefs.Save();
 
@@ -59,7 +63,10 @@ public class FirstTimePopup : MonoBehaviour
             _popupPanel.SetActive(false);
         }
 
-        // লিসেনার রিমুভ করে দেওয়া ভালো মেমোরি ক্লিন রাখার জন্য
+        // Accept করা মাত্রই গেমের সাউন্ড আবার চালু/আনপজ করে দেওয়া হলো
+        AudioListener.pause = false;
+
+        // লিসেনার রিমুভ করে দেওয়া ভালো মেমোরি ক্লিন রাখার জন্য
         if (_acceptButton != null)
         {
             _acceptButton.onClick.RemoveListener(OnAcceptButtonClicked);
