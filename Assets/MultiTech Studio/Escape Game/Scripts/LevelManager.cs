@@ -296,15 +296,37 @@ namespace MultiTechStudio.EscapeGame
             }
             _spawnedLines.Clear();
         }
+       
 
+        // LevelManager.cs - OnLineExited Method (অন্যান্য অংশ অপরিবর্তিত থাকবে)
 
-        // Optional: call this from ArrowLine when it destroys itself on exit
+        private const string TotalCoinsKey = "TotalCoins";
+
+        public int GetTotalCoins()
+        {
+            return PlayerPrefs.GetInt(TotalCoinsKey, 0);
+        }
+
+        public void AddCoins(int amount)
+        {
+            int currentCoins = GetTotalCoins();
+            currentCoins += amount;
+            PlayerPrefs.SetInt(TotalCoinsKey, currentCoins);
+            PlayerPrefs.Save();
+        }
+
         public void OnLineExited(ArrowLine line)
         {
             if (_spawnedLines.Contains(line))
             {
                 _spawnedLines.Remove(line);
-                if (_spawnedLines.Count == 0) onLevelWin?.Invoke();
+                if (_spawnedLines.Count == 0)
+                {
+                    // লেভেল জিতলে কয়েন সেভ করা হচ্ছে
+                    AddCoins(winCoinAmount);
+
+                    onLevelWin?.Invoke();
+                }
             }
             SoundManager.Instance.PlaySound("whoosh");
         }
@@ -318,4 +340,6 @@ namespace MultiTechStudio.EscapeGame
             SoundManager.Instance.PlaySound("block");
         }
     }
+
+
 }
