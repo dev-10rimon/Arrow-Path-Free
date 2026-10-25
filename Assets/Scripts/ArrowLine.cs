@@ -569,21 +569,31 @@ namespace MultiTechStudio.EscapeGame
             SetLineColor(Color.white);
 #endif
         }
-
         public void ShowGrid()
         {
             if (arrowFacingLines == null) return;
-            // compute head and prev to get facing direction and head world pos
+
+            // গ্রিড দেখানোর আগে অবজেক্ট অন নিশ্চিত করা
+            arrowFacingLines.gameObject.SetActive(true);
+
             if (nodes != null && nodes.Count >= 2)
             {
                 Dot head = nodes[nodes.Count - 1];
                 Dot prev = nodes[nodes.Count - 2];
 
-                Vector2Int dir = head.G - prev.G; // grid dir
+                Vector2Int dir = head.G - prev.G;
                 Vector3 headPos = head.transform.position;
 
                 arrowFacingLines.ShowFacingLines(headPos, dir);
             }
+        }
+
+        public void HideGrid()
+        {
+            if (arrowFacingLines == null) return;
+
+            // এটি শুধু নীল গ্রিড/গাইড লাইনগুলো ডিলিট বা হাইড করে দেবে, অ্যারো বা তীরচিহ্ন ঠিক থাকবে
+            arrowFacingLines.ClearFacingLines();
         }
     }
 }

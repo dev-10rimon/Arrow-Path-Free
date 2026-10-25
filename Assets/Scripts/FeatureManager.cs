@@ -38,8 +38,8 @@ namespace MultiTechStudio.EscapeGame
         {
             uiManager = LevelManager.Instance.uiManager;
 
-            hintCount = PlayerPrefs.GetInt("HintCount", 0);
-            gridCount = PlayerPrefs.GetInt("GridCount", 0);
+            hintCount = PlayerPrefs.GetInt("HintCount", 5);
+            gridCount = PlayerPrefs.GetInt("GridCount", 5);
 
             hintCountText.text = hintCount.ToString();
             gridCountText.text = gridCount.ToString();
@@ -88,34 +88,71 @@ namespace MultiTechStudio.EscapeGame
             hintCountText.text = hintCount.ToString();
             LevelManager.Instance.FindLineCanBeRemove();
         }
-        public void ShowGrid()
+        /*public void ShowGrid()
         {
             Debug.Log("Show Grid");
             gridCount--;
             PlayerPrefs.SetInt("GridCount", gridCount);
             gridCountText.text = gridCount.ToString();
             LevelManager.Instance.ShowGrid();
+        }*/
+        // Prothom obosthay LevelManager.Instance.HideGrid() likhte paren jodi thake.
+        private Coroutine hideGridRoutine;
+
+        public void ShowGrid()
+        {
+            Debug.Log("Show Grid");
+
+            // যদি গ্রিড শেষ হওয়ার আগেই আবার ক্লিক করা হয়, আগের টাইমার রিসেট করার জন্য
+            if (hideGridRoutine != null)
+            {
+                StopCoroutine(hideGridRoutine);
+            }
+
+            gridCount--;
+            if (gridCountText != null) gridCountText.text = gridCount.ToString();
+
+            // ১. প্রথমে গ্রিড দেখাবে
+            LevelManager.Instance.ShowGrid();
+
+            // ২. ঠিক ৫ সেকেন্ড পর গ্রিড হাইড করার জন্য টাইমার শুরু হবে
+            hideGridRoutine = StartCoroutine(HideGridAfterDelay(5f));
+        }
+
+        private System.Collections.IEnumerator HideGridAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            // ৫ সেকেন্ড পর LevelManager এর মাধ্যমে সব গ্রিড হাইড করা হবে
+            if (LevelManager.Instance != null)
+            {
+                LevelManager.Instance.HideGrid();
+            }
+
+            Debug.Log("Grid automatically hidden after 5 seconds.");
         }
 
         #region UI Things
-        private void ShowBuyHintUI(int _hintOrGrid = 0)//0 for hint, 1 for grid
+        private void ShowBuyHintUI(int _hintOrGrid = 0) // 0 for hint, 1 for grid
         {
-            SoundManager.Instance.PlaySound("button");
-            previousLevelState = LevelManager.Instance.levelState;
-            LevelManager.Instance.levelState = LevelState.Paused;
-
-            if (AdsManager.Instance.IsRewardVideoReady())
+            // SoundManager Null Check
+            if (SoundManager.Instance != null)
             {
-                buyHintByAdsButton.interactable = true;
-                buyGridByAdsButton.interactable = true;
-            }
-            else
-            {
-                buyHintByAdsButton.interactable = false;
-                buyGridByAdsButton.interactable = false;
+                SoundManager.Instance.PlaySound("button");
             }
 
+            // LevelManager Null Check
+            if (LevelManager.Instance != null)
+            {
+                previousLevelState = LevelManager.Instance.levelState;
+                LevelManager.Instance.levelState = LevelState.Paused;
+            }
 
+            // AdsManager আপাতত স্কিপ রাখা হয়েছে (Ad Buttons Disabled)
+            if (buyHintByAdsButton != null) buyHintByAdsButton.interactable = false;
+            if (buyGridByAdsButton != null) buyGridByAdsButton.interactable = false;
+
+            // UI Panel Show
             if (_hintOrGrid == 0)
             {
                 if (buyHintUI != null) buyHintUI.SetActive(true);
@@ -127,26 +164,52 @@ namespace MultiTechStudio.EscapeGame
         }
 
 
+        /*   private void HintButtonClicked()
+           {
+               if (CanShowHint())
+               {
+                   ShowHint();
+               }
+               else
+               {
+                   ShowBuyHintUI(0);
+               }
+           }
+           private void GridButtonClicked()
+           {
+               if (CanShowGrid())
+               {
+                   ShowGrid();
+               }
+               else
+               {
+                   ShowBuyHintUI(1);
+               }
+           }*/
         private void HintButtonClicked()
         {
             if (CanShowHint())
             {
+                // Pop-up Chhara sora shori hint dekhabe
                 ShowHint();
             }
             else
             {
-                ShowBuyHintUI(0);
+                // 5-ti shesh hoye gele ekhon apnar preference anujayi pop-up ba notification dite paren
+                Debug.Log("Free hints are finished for this level!");
             }
         }
+
         private void GridButtonClicked()
         {
             if (CanShowGrid())
             {
+                // Pop-up Chhara sora shori grid dekhabe
                 ShowGrid();
             }
             else
             {
-                ShowBuyHintUI(1);
+                Debug.Log("Free grids are finished for this level!");
             }
         }
 
@@ -214,6 +277,18 @@ namespace MultiTechStudio.EscapeGame
                     CloseBuyGridUI();
                 });
         }
+
+        public void ResetFreeItemsForNewLevel()
+        {
+            hintCount = 5;
+            gridCount = 5;
+            if (hintCountText != null) hintCountText.text = hintCount.ToString();
+            if (gridCountText != null) gridCountText.text = gridCount.ToString();
+        }
+
+
         #endregion
     }
+
+
 }

@@ -361,11 +361,11 @@ namespace MultiTechStudio.EscapeGame
             levelManager.levelState = LevelState.Failed;
         }
 
-        private void RetryByCoinsButtonClicked()
+        public void RetryByCoinsButtonClicked()
         {
-            if (levelManager == null) return;
+          //  if (levelManager == null) return;
 
-            if (coins < levelManager.coinsRequiredToRetry) return;
+          //  if (coins < levelManager.coinsRequiredToRetry) return;
             SpendCoins(levelManager.coinsRequiredToRetry);
             LoadLevel(levelManager.startLives);
             SoundManager.Instance.PlaySound("button");
@@ -397,7 +397,7 @@ namespace MultiTechStudio.EscapeGame
             });
         }
 
-        private void MainMenuButtonClicked()
+        public void MainMenuButtonClicked()
         {
             SoundManager.Instance.PlaySound("button");
             levelManager?.ReloadLevel();

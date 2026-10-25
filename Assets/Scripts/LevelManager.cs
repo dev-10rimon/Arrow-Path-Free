@@ -239,6 +239,8 @@ namespace MultiTechStudio.EscapeGame
         {
             GridManager.I.ClearGridOccupant();
             if (currentLevelIndex >= 0) LoadLevel(currentLevelIndex);
+            // LevelManager.cs এর LoadLevel মেথডের ভেতরে নিচের লাইনটি বসিয়ে দিন:
+            FindAnyObjectByType<FeatureManager>()?.ResetFreeItemsForNewLevel();
         }
 
         public void IncreaseLevelNumber()
@@ -251,6 +253,8 @@ namespace MultiTechStudio.EscapeGame
         public void LoadNextLevel()
         {
             LoadLevel(currentLevelIndex);
+            // LevelManager.cs এর LoadLevel মেথডের ভেতরে নিচের লাইনটি বসিয়ে দিন:
+            FindAnyObjectByType<FeatureManager>()?.ResetFreeItemsForNewLevel();
         }
 
         public void HideTutorial()
@@ -296,7 +300,7 @@ namespace MultiTechStudio.EscapeGame
             }
             _spawnedLines.Clear();
         }
-       
+
 
         // LevelManager.cs - OnLineExited Method (অন্যান্য অংশ অপরিবর্তিত থাকবে)
 
@@ -338,6 +342,18 @@ namespace MultiTechStudio.EscapeGame
                 uiManager.RemoveLife();
 
             SoundManager.Instance.PlaySound("block");
+        }
+        public void HideGrid()
+        {
+            if (_spawnedLines == null || _spawnedLines.Count <= 0) return;
+
+            foreach (ArrowLine line in _spawnedLines)
+            {
+                if (line != null)
+                {
+                    line.HideGrid(); // প্রতিটি ArrowLine এর গাইড লাইন বন্ধ করবে
+                }
+            }
         }
     }
 
