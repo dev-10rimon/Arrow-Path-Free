@@ -8,15 +8,15 @@ public class PenFlickController : MonoBehaviour
     private Camera mainCam;
 
     [Header("Flick Settings")]
-    public float hitForce = 8f;    // কলমের জন্য ৮-১০ ভালো
+    public float hitForce = 10f;
     public float maxDragDistance = 4f;
-    public float torqueMultiplier = 0.2f; // ঘূর্ণন কমিয়ে দিলাম
+    public float torqueMultiplier = 0.3f;
 
     [Header("UI & Visuals")]
     public TextMeshPro powerText;
     public LineRenderer aimLine;
+    public GameObject aimCircle; // ক্যারমের মতো বৃত্ত
     public GameObject hitDot;
-    public GameObject aimCircle;
 
     [Header("In-Scene Power Meter")]
     public GameObject powerMeterContainer;
@@ -64,7 +64,8 @@ public class PenFlickController : MonoBehaviour
                 if (aimCircle != null)
                 {
                     aimCircle.SetActive(true);
-                    aimCircle.transform.position = hitPoint;
+                    // ক্যারমের মতো বৃত্তটা কলমের ঠিক মাঝখানে বসাবো
+                    aimCircle.transform.position = transform.position;
                 }
                 if (powerMeterContainer != null) powerMeterContainer.SetActive(true);
             }
@@ -74,11 +75,13 @@ public class PenFlickController : MonoBehaviour
         {
             Vector2 currentMousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
 
+            // Slingshot: টানার উল্টো দিকে ফোর্স
             forceDirection = (hitPoint - currentMousePos).normalized;
 
             float dragDistance = Vector2.Distance(hitPoint, currentMousePos);
             currentPower = Mathf.Clamp(dragDistance, 0f, maxDragDistance) / maxDragDistance;
 
+            // --- মিটার আপডেট ---
             if (powerText != null)
             {
                 powerText.text = (currentPower * 100f).ToString("F0") + "%";
@@ -97,11 +100,22 @@ public class PenFlickController : MonoBehaviour
                     powerMeterFillSprite.color = Color.Lerp(Color.yellow, Color.red, (currentPower - 0.5f) / 0.5f);
             }
 
+            // --- ক্যারম স্টাইল Aim Guide (বৃত্ত ও তীর) ---
             if (aimLine != null)
             {
                 aimLine.positionCount = 2;
-                aimLine.SetPosition(0, hitPoint);
-                aimLine.SetPosition(1, currentMousePos);
+
+                // বৃত্তের বাইরে থেকে তীর শুরু হবে
+                Vector2 startPoint = (Vector2)transform.position - (forceDirection * 0.5f);
+                aimLine.SetPosition(0, startPoint);
+                aimLine.SetPosition(1, startPoint + (forceDirection * currentPower * 3f));
+            }
+
+            // বৃত্তটা পাওয়ার অনুযায়ী ছোট-বড় হবে
+            if (aimCircle != null)
+            {
+                float circleScale = 1f + (currentPower * 1.5f); // পাওয়ার বাড়লে বৃত্ত বড় হবে
+                aimCircle.transform.localScale = new Vector3(circleScale, circleScale, 1f);
             }
         }
 
@@ -119,11 +133,9 @@ public class PenFlickController : MonoBehaviour
             {
                 rb.bodyType = RigidbodyType2D.Dynamic;
 
-                // হালকা ধাক্কা
                 Vector2 force = forceDirection * (hitForce * currentPower);
                 rb.AddForce(force, ForceMode2D.Impulse);
 
-                // ঘূর্ণন কমানো
                 Vector2 offset = hitPoint - rb.worldCenterOfMass;
                 float crossProduct = (offset.x * forceDirection.y) - (offset.y * forceDirection.x);
                 float torqueDirection = Mathf.Sign(crossProduct);
