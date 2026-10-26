@@ -9252,8 +9252,8 @@ MonoBehaviour:
   zoomSpeed: 0.5
   scrollWheelSensitivity: 2
   enablePanLimits: 1
-  panLimitMin: {x: -10, y: -10}
-  panLimitMax: {x: 10, y: 10}
+  panLimitMin: {x: -30, y: -30}
+  panLimitMax: {x: 30, y: 30}
 --- !u!1 &333200708
 GameObject:
   m_ObjectHideFlags: 0
