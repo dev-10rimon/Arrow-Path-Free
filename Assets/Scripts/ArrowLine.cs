@@ -58,7 +58,7 @@ namespace MultiTechStudio.EscapeGame
 
         // Expose for the saver
         public int StartIndexPublic => startIndex;
-
+        private Stack<Dot> tailHistory = new Stack<Dot>();
         [Header("Action")]
         public UnityEvent onLineExitedAction;
         public UnityEvent onLineHitAction;
@@ -69,10 +69,13 @@ namespace MultiTechStudio.EscapeGame
             lr = GetComponent<LineRenderer>();
             edge = GetComponent<EdgeCollider2D>();
         }
-
+        private List<Dot> originalNodes = new();
         void Start()
         {
             if (nodes == null || nodes.Count == 0) return;
+
+            originalNodes = new List<Dot>(nodes);
+            tailHistory.Clear(); // History clear rakha
 
             baseColor = lr.material.HasProperty("_Color") ? lr.material.color : Color.white;
             var levelManager = LevelManager.Instance;
@@ -278,10 +281,12 @@ namespace MultiTechStudio.EscapeGame
             ReleaseAllNodes();
 
             nodes = dots ?? new List<Dot>();
+            originalNodes = new List<Dot>(nodes);
+            tailHistory.Clear(); // Ekhaneo clear hobe
             startIndex = Mathf.Clamp(startIndexOverride, 0, Mathf.Max(0, nodes.Count - 1));
 
             if (occupyAllNodes) ClaimAllNodes();
-            else if (nodes.Count > 0) SafeClaim(nodes[startIndex]); // at least claim head
+            else if (nodes.Count > 0) SafeClaim(nodes[startIndex]);
 
             SyncVisualImmediate();
         }
@@ -310,7 +315,6 @@ namespace MultiTechStudio.EscapeGame
             return true;
         }
 
-
         private void StepOnce()
         {
             // Need at least two nodes to know the facing
@@ -335,33 +339,32 @@ namespace MultiTechStudio.EscapeGame
                 return;
             }
 
-
             // occupancy check (ignore self)
             if (nextDot.occupant != null && nextDot.occupant != this)
             {
                 if (debugLogs) Debug.Log($"[ArrowLine] Blocked by {nextDot.occupant.name} at {nextG}");
-                // small flash
+
+                // Life nosto ba hit action invoke hobe
                 onLineHitAction?.Invoke();
-#if MT_DOTWEEN
-                DOTween.Sequence()
-                    .AppendCallback(() => SetLineColor(hitColor))
-                    .AppendInterval(0.08f)
-                    .AppendCallback(() => SetLineColor(baseColor));
-#else
-                // Fallback: simple flash without tween
-                SetLineColor(hitColor);
-                Invoke(nameof(ResetLineColor), 0.08f);
-#endif
+
+                isMoving = true;
+
+                // Shortcut ba direct diagonal bad diye, ekdom grid/dots dhore step-by-step pichon theke fire asha
+                StartCoroutine(ReturnStepByStepRoutine());
+
                 queuedSteps = 0;
                 return;
             }
+
+            // --- Samne jabar somoy tail history te save kore rakha ---
+            Dot tail = nodes[0];
+            tailHistory.Push(tail);
 
             // Build tween arrays from current world points
             Vector3[] from = new Vector3[n];
             lr.GetPositions(from);
 
             // Update body list: drop tail, append new head
-            Dot tail = nodes[0];
             if (occupyAllNodes && tail && tail.occupant == this) tail.occupant = null;
 
             for (int i = 0; i < n - 1; i++) nodes[i] = nodes[i + 1];
@@ -420,6 +423,102 @@ namespace MultiTechStudio.EscapeGame
 #endif
             if (LevelManager.Instance.currentLevelIndex != LevelManager.Instance.tutorialZoomLevel)
                 LevelManager.Instance.HideTutorial();
+        }
+        private System.Collections.IEnumerator ReturnStepByStepRoutine()
+        {
+            SetLineColor(hitColor);
+
+            // Je koyta step samne giyechilo, protiti step grid dhore ekta ekta kore ulto dike pichabe
+            while (tailHistory.Count > 0)
+            {
+                Dot restoredTail = tailHistory.Pop();
+
+                int n = nodes.Count;
+                Vector3[] from = new Vector3[n];
+                lr.GetPositions(from);
+
+                ReleaseAllNodes();
+
+                // Nodes gulo ke ek step pichone shift kora
+                for (int i = n - 1; i > 0; i--)
+                {
+                    nodes[i] = nodes[i - 1];
+                }
+                nodes[0] = restoredTail;
+
+                ClaimAllNodes();
+
+                Vector3[] to = new Vector3[n];
+                for (int i = 0; i < n; i++)
+                {
+                    var p = nodes[i].transform.position;
+                    p.z = zOffset;
+                    to[i] = p;
+                }
+
+                // Protiti grid step smoothly animate hobe
+                float elapsed = 0f;
+                float duration = stepTime * 0.8f;
+                while (elapsed < duration)
+                {
+                    elapsed += Time.deltaTime;
+                    float t = Mathf.Clamp01(elapsed / duration);
+                    float smoothT = Mathf.Sin(t * Mathf.PI * 0.5f);
+
+                    for (int i = 0; i < n; i++)
+                    {
+                        lr.SetPosition(i, Vector3.Lerp(from[i], to[i], smoothT));
+                    }
+                    SyncEdgeFromLR();
+                    UpdateHeadFromLR();
+
+                    yield return null;
+                }
+
+                for (int i = 0; i < n; i++)
+                {
+                    lr.SetPosition(i, to[i]);
+                }
+                SyncEdgeFromLR();
+                UpdateHeadAtPathEnd();
+            }
+
+            SyncVisualImmediate();
+            SetLineColor(baseColor);
+            isMoving = false;
+        }
+        private System.Collections.IEnumerator SmoothReturnRoutine(Vector3[] from, Vector3[] to, int newCount, float duration)
+        {
+            float elapsed = 0f;
+            SetLineColor(hitColor);
+
+            while (elapsed < duration)
+            {
+                elapsed += UnityEngine.Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+
+                // Smooth easing calculation manually (Sin wave use kore smooth effect)
+                float smoothT = Mathf.Sin(t * Mathf.PI * 0.5f);
+
+                for (int i = 0; i < newCount; i++)
+                {
+                    lr.SetPosition(i, Vector3.Lerp(from[i], to[i], smoothT));
+                }
+                SyncEdgeFromLR();
+                UpdateHeadFromLR(); // Matha na ghurie thik jevabe chilo sevetai pichabe
+
+                yield return null;
+            }
+
+            // Exact final positions ensure kora
+            for (int i = 0; i < newCount; i++)
+            {
+                lr.SetPosition(i, to[i]);
+            }
+            SyncEdgeFromLR();
+            SyncVisualImmediate();
+            SetLineColor(baseColor);
+            isMoving = false;
         }
         /// <summary>
         /// Forces the line renderer and collider to match the current node list instantly.
