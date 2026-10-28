@@ -93,6 +93,9 @@ namespace MultiTechStudio.EscapeGame
             return GridManager.I ? GridManager.I.GetDotByGrid(g) : null;
         }
 
+        private Vector3 mousePressPos;
+        private bool trackingClick = false;
+
         void Update()
         {
             if (!manualClick) return;
@@ -100,37 +103,75 @@ namespace MultiTechStudio.EscapeGame
             var levelManager = LevelManager.Instance;
             if (levelManager != null && levelManager.levelState != LevelState.Playing) return;
 
-            bool down = Input.GetMouseButtonDown(0)
-                        || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
-            if (!down) return;
-
-            var camUse = gameCamera != null ? gameCamera : Camera.main;
-            if (!camUse) { if (debugLogs) Debug.LogWarning("[ArrowLine] No camera"); return; }
-
-            Vector3 sp = (Input.touchCount > 0) ? (Vector3)Input.GetTouch(0).position : Input.mousePosition;
-            Vector3 w = camUse.ScreenToWorldPoint(sp);
-            Vector2 p2 = new Vector2(w.x, w.y);
-
-            // use a radius based on visible line width
-            float r = 0.5f;
-            if (lr) r = Mathf.Max(lr.startWidth, lr.endWidth) * 0.6f; // tweak 0.5–0.8f to taste
-
-            var hits = Physics2D.OverlapCircleAll(p2, r);
-            if (debugLogs)
+            // Ekadhik touch thakle (jemon pinch/zoom) click cancel hobe
+            if (Input.touchCount > 1)
             {
-                if (hits.Length == 0) Debug.Log($"[ArrowLine] OverlapCircle({p2}, r={r:F2}) — no hit");
-                else foreach (var h in hits)
-                        Debug.Log($"[ArrowLine] OverlapCircle hit {h.transform.name} (layer={LayerMask.LayerToName(h.gameObject.layer)})");
+                trackingClick = false;
+                return;
             }
 
-            foreach (var h in hits)
+            // 1. Touch or Mouse Down (Click shuru)
+            bool down = Input.GetMouseButtonDown(0)
+                        || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
+
+            if (down)
             {
-                if (h.transform == transform)
+                var camUse = gameCamera != null ? gameCamera : Camera.main;
+                if (!camUse) return;
+
+                Vector3 sp = (Input.touchCount > 0) ? (Vector3)Input.GetTouch(0).position : Input.mousePosition;
+                Vector3 w = camUse.ScreenToWorldPoint(sp);
+                Vector2 p2 = new Vector2(w.x, w.y);
+
+                float r = 0.5f;
+                if (lr) r = Mathf.Max(lr.startWidth, lr.endWidth) * 0.6f;
+
+                var hits = Physics2D.OverlapCircleAll(p2, r);
+                foreach (var h in hits)
                 {
-                    if (debugLogs) Debug.Log("[ArrowLine] Clicked me → TryAdvance()");
-                    TryAdvance();
-                    SoundManager.Instance.PlaySound("arrow");
-                    break;
+                    if (h.transform == transform)
+                    {
+                        trackingClick = true;
+                        mousePressPos = sp; // Click korar shurur position store rakha
+                        break;
+                    }
+                }
+            }
+
+            // 2. Jodi tracking cholte thake, check korbo user drag ba swipe korse kina
+            if (trackingClick)
+            {
+                bool isHeld = Input.GetMouseButton(0) || (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(0).phase == TouchPhase.Stationary));
+
+                if (isHeld)
+                {
+                    Vector3 currentSp = (Input.touchCount > 0) ? (Vector3)Input.GetTouch(0).position : Input.mousePosition;
+                    float dragDistance = Vector3.Distance(mousePressPos, currentSp);
+
+                    // Jodi 20 pixel-er beshi soriye feli, tahole bujhbo eta drag/swipe hocse, click na
+                    if (dragDistance > 20f)
+                    {
+                        trackingClick = false; // Drag korar karone click cancel
+                    }
+                }
+
+                // 3. Touch or Mouse Up (Click shesh)
+                bool up = Input.GetMouseButtonUp(0) || (Input.touchCount > 0 && (Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(0).phase == TouchPhase.Canceled));
+
+                if (up)
+                {
+                    Vector3 currentSp = (Input.touchCount > 0) ? (Vector3)Input.GetTouch(0).position : Input.mousePosition;
+                    float dragDistance = Vector3.Distance(mousePressPos, currentSp);
+
+                    // Jodi kono drag chara shudhu clean tap hoy (distance <= 20f)
+                    if (dragDistance <= 20f)
+                    {
+                        if (debugLogs) Debug.Log("[ArrowLine] Clean click detected → TryAdvance()");
+                        TryAdvance();
+                        SoundManager.Instance.PlaySound("arrow");
+                    }
+
+                    trackingClick = false;
                 }
             }
         }
