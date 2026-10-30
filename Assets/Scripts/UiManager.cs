@@ -212,14 +212,30 @@ namespace MultiTechStudio.EscapeGame
 
         public void RemoveLife()
         {
-            ShowLiveLoseAnim();
-            lives = Mathf.Max(0, lives - 1);
+            if (lives <= 0) return;
 
-            if (livesIcons != null && livesIcons.Length > 0)
+            int targetIndex = lives - 1;
+
+            if (livesIcons != null && targetIndex >= 0 && targetIndex < livesIcons.Length)
             {
-                int index = Mathf.Clamp(lives, 0, livesIcons.Length - 1);
-                if (livesIcons[index] != null) livesIcons[index].SetActive(false);
+                if (livesIcons[targetIndex] != null)
+                {
+                    // Je live-ti loss hosse, tar exact World Position-ti nicchi
+                    Vector3 targetPosition = livesIcons[targetIndex].transform.position;
+
+                    // Live icon-ti disable kore dicchi
+                    livesIcons[targetIndex].SetActive(false);
+
+                    // Code-er maddhome animation/movement shuru korchi
+                    ShowLiveLoseAnimAtPosition(targetPosition);
+                }
             }
+            else
+            {
+                ShowLiveLoseAnim();
+            }
+
+            lives = Mathf.Max(0, lives - 1);
 
             if (lives <= 0)
             {
@@ -228,15 +244,102 @@ namespace MultiTechStudio.EscapeGame
             }
         }
 
-        public void ShowLiveLoseAnim()
+        public void ShowLiveLoseAnimAtPosition(Vector3 worldPos)
         {
             if (liveLoseAnim == null) return;
 
+            // Age kono animation cholte thakle seta stop kore dibo
+            StopAllCoroutines();
+            StartCoroutine(AnimateLiveLoseFall(worldPos));
+        }
+
+        private IEnumerator AnimateLiveLoseFall(Vector3 startPos)
+        {
+            liveLoseAnim.SetActive(true);
+
+            RectTransform loseAnimRect = liveLoseAnim.GetComponent<RectTransform>();
+            if (loseAnimRect != null)
+            {
+                loseAnimRect.position = startPos;
+            }
+
+            // Fade out korar jonno CanvasGroup niye nicchi (jodi na thake, auto add hoye jabe)
+            CanvasGroup canvasGroup = liveLoseAnim.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = liveLoseAnim.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.alpha = 1f; // Shuru te completely visible thakbe
+
+            float duration = 1.2f;       // Animation duration
+            float elapsed = 0f;
+
+            // Nicher dike namar distance (-180f)
+            Vector3 endPos = startPos + new Vector3(0f, -360f, 0f);
+
+            // Original scale thik rakhar jonno
+            Vector3 originalScale = loseAnimRect != null ? loseAnimRect.localScale : Vector3.one;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+
+                // Smooth easing effect
+                float smoothT = t * t;
+
+                if (loseAnimRect != null)
+                {
+                    // Position ebong scale set korchi
+                    loseAnimRect.position = Vector3.Lerp(startPos, endPos, smoothT);
+                    loseAnimRect.localScale = originalScale;
+                }
+
+                // Niche namar sathe sathe aste aste fade out (alpha 1 theke 0) hocche
+                canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
+
+                yield return null;
+            }
+
+            // Animation sesh hole alpha abar 1 kore disable kore dicchi (porer bar use korar jonno)
+            canvasGroup.alpha = 1f;
+            liveLoseAnim.SetActive(false);
+        }        // Fallback method
+        public void ShowLiveLoseAnim()
+        {
+            if (liveLoseAnim == null) return;
+            StartCoroutine(AnimateLiveLoseFall(liveLoseAnim.transform.position));
+        }
+
+
+        // Fallback/Default method
+
+        public void ShowLiveLoseAnim(Vector3 startPosition)
+        {
+            if (liveLoseAnim == null) return;
+
+            // liveLoseAnim jodi UI (RectTransform) hoy, tahole tar position oi icon-er position a niye jabo
+            RectTransform loseAnimRect = liveLoseAnim.GetComponent<RectTransform>();
+            if (loseAnimRect != null)
+            {
+                loseAnimRect.position = startPosition;
+            }
+
             liveLoseAnim.SetActive(true);
             var animationComponent = liveLoseAnim.GetComponent<Animation>();
-            if (animationComponent != null) animationComponent.Play();
+            if (animationComponent != null)
+            {
+                animationComponent.Play();
+            }
+
+            CancelInvoke(nameof(HideLiveLoseAnim));
             Invoke(nameof(HideLiveLoseAnim), 2f);
         }
+
+        // Overload method purono call gulo handle korar jonno
+      
+
+        
         private void OpenSettingsUI()
         {
             settingsUI.OpenSettings();
