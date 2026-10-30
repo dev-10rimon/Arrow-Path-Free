@@ -7422,10 +7422,10 @@ RectTransform:
   - {fileID: 1433885103}
   m_Father: {fileID: 1409395299}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 541.23, y: -125}
-  m_SizeDelta: {x: 257.91, y: 64}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -30.77002, y: -125}
+  m_SizeDelta: {x: 257.91003, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &289598491
 MonoBehaviour:
@@ -14338,7 +14338,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 180, y: -272}
+  m_AnchoredPosition: {x: 178, y: -272}
   m_SizeDelta: {x: 367.4399, y: 145}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &492648673
@@ -23790,7 +23790,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1fe24d510c224714ba227e9796e71307, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b709b804fccaa444ea94b0d291ef0a70, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -27479,7 +27479,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -193, y: -273}
+  m_AnchoredPosition: {x: -204, y: -273}
   m_SizeDelta: {x: 307.5304, y: 145}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1022536431
@@ -31707,7 +31707,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -31789,7 +31789,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 5.4492, y: -25}
+  m_AnchoredPosition: {x: 5.449188, y: -25}
   m_SizeDelta: {x: -60.5522, y: 50}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!1 &1169638850
@@ -63788,7 +63788,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8937983616702429371, guid: 6d6d7b0ce24ac2644863493029d3d911, type: 3}
+  m_Sprite: {fileID: -4093620233156422854, guid: e774a878e77c26c40a0a0aeec34aeeab, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
