@@ -8,6 +8,11 @@ public class GameController : MonoBehaviour
 {
     public UIDocument uiDocument;
 
+    [Header("Audio Settings (Optional)")]
+    public AudioSource sfxSource;
+    public AudioClip popSound;
+    public AudioClip winSound;
+
     // UI Elements
     private VisualElement root, gameBoard, animLayer, effectLayer, victoryModal, liveBgLayer;
     private Label lblLevel, lblMoves, lblTime, finalMoves, finalTime;
@@ -20,7 +25,7 @@ public class GameController : MonoBehaviour
     private int timerSeconds = 0;
     private bool isAnimating = false;
     private bool isTimerRunning = false;
-    private string difficulty = "Medium";
+    private string difficulty = "Medium"; // Easy, Medium, Hard
 
     private List<List<int>> tubes = new List<List<int>>();
     private int selectedTubeIndex = -1;
@@ -57,6 +62,7 @@ public class GameController : MonoBehaviour
         btnModalContinue = root.Q<Button>("btn-modal-continue");
         dropdownDifficulty = root.Q<DropdownField>("dropdown-difficulty");
 
+        // Button Events
         btnUndo.clicked += UndoMove;
         btnRestart.clicked += RestartLevel;
         btnAddTube.clicked += AddExtraTube;
@@ -68,9 +74,10 @@ public class GameController : MonoBehaviour
             StartNewLevel();
         });
 
-        // 🔥 Start Live Background
-        StartCoroutine(LiveBackgroundRoutine());
+        if (sfxSource == null) sfxSource = gameObject.AddComponent<AudioSource>();
 
+        // 🔥 Start Live Background & Game
+        StartCoroutine(LiveBackgroundRoutine());
         StartNewLevel();
     }
 
@@ -81,40 +88,12 @@ public class GameController : MonoBehaviour
         bgOrbs.Clear();
         bgSpeeds.Clear();
 
-        // হেক্সাগন গ্রিড ইফেক্ট (CSS-এর মতো)
-        var grid = new VisualElement();
-        grid.style.position = Position.Absolute;
-        grid.style.width = Length.Percent(100);
-        grid.style.height = Length.Percent(100);
-        grid.generateVisualContent += (mgc) => {
-            var painter = mgc.painter2D;
-            painter.strokeColor = new Color(0.1f, 0.15f, 0.25f, 0.4f);
-            painter.lineWidth = 1f;
-
-            // সাধারণ গ্রিড আঁকা
-            for (int x = 0; x < 1920; x += 40)
-            {
-                painter.BeginPath();
-                painter.MoveTo(new Vector2(x, 0));
-                painter.LineTo(new Vector2(x, 1080));
-                painter.Stroke();
-            }
-            for (int y = 0; y < 1080; y += 40)
-            {
-                painter.BeginPath();
-                painter.MoveTo(new Vector2(0, y));
-                painter.LineTo(new Vector2(1920, y));
-                painter.Stroke();
-            }
-        };
-        liveBgLayer.Add(grid);
-
-        // ভাসমান নিওন অর্বস তৈরি
+        // Create Floating Neon Orbs
         for (int i = 0; i < 15; i++)
         {
             VisualElement orb = new VisualElement();
             orb.style.position = Position.Absolute;
-            float size = Random.Range(100f, 300f);
+            float size = Random.Range(150f, 350f);
             orb.style.width = size;
             orb.style.height = size;
             orb.style.borderTopLeftRadius = size / 2;
@@ -122,8 +101,8 @@ public class GameController : MonoBehaviour
             orb.style.borderBottomLeftRadius = size / 2;
             orb.style.borderBottomRightRadius = size / 2;
 
-            // নিওন কালার (নীল এবং বেগুনি)
-            Color c = Random.value > 0.5f ? new Color(0.22f, 0.74f, 0.97f, 0.05f) : new Color(0.65f, 0.51f, 1f, 0.05f);
+            // Neon Colors (Blue/Purple mix with low opacity)
+            Color c = Random.value > 0.5f ? new Color(0.22f, 0.74f, 0.97f, 0.08f) : new Color(0.65f, 0.51f, 1f, 0.08f);
             orb.style.backgroundColor = c;
 
             orb.style.left = Random.Range(-200f, 1920f);
@@ -131,7 +110,8 @@ public class GameController : MonoBehaviour
 
             liveBgLayer.Add(orb);
             bgOrbs.Add(orb);
-            bgSpeeds.Add(new Vector2(Random.Range(-10f, 10f), Random.Range(-20f, -5f)));
+            // Random speed and direction
+            bgSpeeds.Add(new Vector2(Random.Range(-15f, 15f), Random.Range(-25f, -5f)));
         }
 
         while (true)
@@ -143,10 +123,10 @@ public class GameController : MonoBehaviour
                 float curX = orb.resolvedStyle.left + speed.x * Time.deltaTime;
                 float curY = orb.resolvedStyle.top + speed.y * Time.deltaTime;
 
-                // স্ক্রিনের বাইরে চলে গেলে আবার নিচে রিসেট হবে
-                if (curY < -300) { curY = 1080 + 100; curX = Random.Range(-200f, 1920f); }
-                if (curX < -300) curX = 1920 + 100;
-                if (curX > 1920 + 300) curX = -200;
+                // Wrap around screen
+                if (curY < -400) { curY = 1100; curX = Random.Range(-200f, 1920f); }
+                if (curX < -400) curX = 1920 + 100;
+                if (curX > 1920 + 400) curX = -100;
 
                 orb.style.left = curX;
                 orb.style.top = curY;
@@ -188,6 +168,7 @@ public class GameController : MonoBehaviour
         for (int c = 0; c < numColors; c++)
             for (int i = 0; i < TUBE_CAPACITY; i++) pool.Add(c);
 
+        // Shuffle
         for (int i = 0; i < pool.Count; i++)
         {
             int temp = pool[i];
@@ -244,6 +225,7 @@ public class GameController : MonoBehaviour
                 ball.AddToClassList($"ball-{colorNames[tubes[i][j]]}");
                 VisualElement highlight = new VisualElement(); highlight.AddToClassList("ball-highlight"); ball.Add(highlight);
 
+                // 🔥 Only the top ball lifts up when selected
                 if (selectedTubeIndex == i && j == tubes[i].Count - 1)
                 {
                     ball.AddToClassList("selected-top");
@@ -265,6 +247,7 @@ public class GameController : MonoBehaviour
             if (tubes[clickedIndex].Count > 0)
             {
                 selectedTubeIndex = clickedIndex;
+                PlaySound(popSound);
                 DrawBoard();
             }
         }
@@ -309,7 +292,7 @@ public class GameController : MonoBehaviour
         return Mathf.Min(consecutive, spaceAvailable);
     }
 
-    // 🔥 Smooth Multi-Ball Flow (No Teleport)
+    // 🔥 Smooth Multi-Ball Flow Sequence
     IEnumerator AnimateFlowRoutine(int fromIdx, int toIdx, int count)
     {
         isAnimating = true;
@@ -327,7 +310,7 @@ public class GameController : MonoBehaviour
         }
 
         selectedTubeIndex = -1;
-        DrawBoard(); // সোর্স টিউব আপডেট হলো (বলগুলো মুছে গেল)
+        DrawBoard();
 
         foreach (var color in ballsToMove)
         {
@@ -337,7 +320,7 @@ public class GameController : MonoBehaviour
             VisualElement highlight = new VisualElement(); highlight.AddToClassList("ball-highlight"); flying.Add(highlight);
 
             float startX = fromRect.center.x - 29;
-            float startY = fromRect.y - 65; // উপরে ভাসা বলের পজিশন থেকে শুরু
+            float startY = fromRect.y - 65; // Start from top of source tube
 
             float targetX = toRect.center.x - 29;
             int currentDestCount = tubes[toIdx].Count;
@@ -347,7 +330,7 @@ public class GameController : MonoBehaviour
             flying.style.top = startY;
             animLayer.Add(flying);
 
-            // ১. উপরে তোলা (Lift)
+            // 1. Lift up
             float elapsed = 0f;
             float liftDuration = 0.05f;
             while (elapsed < liftDuration)
@@ -357,7 +340,7 @@ public class GameController : MonoBehaviour
                 yield return null;
             }
 
-            // ২. ডানে/বামে যাওয়া (Horizontal) - দ্রুত
+            // 2. Move Horizontally (Fast)
             elapsed = 0f;
             float moveDuration = 0.15f;
             float currentStartX = flying.resolvedStyle.left;
@@ -368,7 +351,7 @@ public class GameController : MonoBehaviour
                 yield return null;
             }
 
-            // ৩. নিচে পড়া (Drop) - দ্রুত
+            // 3. Drop Down
             elapsed = 0f;
             float dropDuration = 0.1f;
             float currentDropY = flying.resolvedStyle.top;
@@ -379,7 +362,7 @@ public class GameController : MonoBehaviour
                 yield return null;
             }
 
-            // ৪. ছোট বাউন্স (Bounce)
+            // 4. Small Bounce
             elapsed = 0f;
             float bounceDuration = 0.08f;
             float bounceHeight = 10f;
@@ -392,12 +375,10 @@ public class GameController : MonoBehaviour
             flying.style.top = targetY;
 
             flying.RemoveFromHierarchy();
-
-            // ডেটা আপডেট এবং টার্গেট টিউবে বল যোগ করা
             tubes[toIdx].Add(color);
-            DrawBoard(); // UI আপডেট
+            DrawBoard();
 
-            // পরের বল আসার আগে খুব সামান্য অপেক্ষা (যাতে সিরিয়ালি লাগে)
+            // Small delay between consecutive balls
             yield return new WaitForSeconds(0.04f);
         }
 
@@ -406,14 +387,15 @@ public class GameController : MonoBehaviour
         isAnimating = false;
         DrawBoard();
 
-        // টিউব কমপ্লিট চেক
+        // Tube Complete Check
         if (tubes[toIdx].Count == TUBE_CAPACITY && tubes[toIdx].All(x => x == tubes[toIdx][0]))
         {
+            PlaySound(winSound);
             tubeEls[toIdx].AddToClassList("completed");
             StartCoroutine(SpawnParticles(toRect.center, colorNames[tubes[toIdx][0]]));
         }
 
-        // উইন চেক
+        // Win Check
         if (tubes.All(t => t.Count == 0 || (t.Count == TUBE_CAPACITY && t.All(x => x == t[0]))))
         {
             isTimerRunning = false;
@@ -421,6 +403,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // 🎇 Particle Effects (Shockwave + Confetti)
     IEnumerator SpawnParticles(Vector2 center, string colorName)
     {
         Color color = Color.white;
@@ -436,6 +419,7 @@ public class GameController : MonoBehaviour
             case "cyan": color = new Color(0.04f, 0.52f, 0.89f); break;
         }
 
+        // Shockwave Ring
         VisualElement ring = new VisualElement();
         ring.style.position = Position.Absolute;
         ring.style.width = 20; ring.style.height = 20;
@@ -446,6 +430,7 @@ public class GameController : MonoBehaviour
         ring.style.left = center.x - 10; ring.style.top = center.y - 10;
         effectLayer.Add(ring);
 
+        // Confetti Particles
         int pCount = 35;
         List<VisualElement> particles = new List<VisualElement>();
         List<Vector2> velocities = new List<Vector2>();
@@ -473,7 +458,7 @@ public class GameController : MonoBehaviour
 
             for (int i = 0; i < pCount; i++)
             {
-                velocities[i] += new Vector2(0, 600f * Time.deltaTime);
+                velocities[i] += new Vector2(0, 600f * Time.deltaTime); // Gravity
                 particles[i].style.left = particles[i].resolvedStyle.left + velocities[i].x * Time.deltaTime;
                 particles[i].style.top = particles[i].resolvedStyle.top + velocities[i].y * Time.deltaTime;
                 particles[i].style.opacity = Mathf.Lerp(1f, 0f, t);
@@ -491,6 +476,7 @@ public class GameController : MonoBehaviour
         victoryModal.style.display = DisplayStyle.Flex;
     }
 
+    // ================= BUTTON ACTIONS =================
     void NextLevelFromModal() { victoryModal.style.display = DisplayStyle.None; currentLevel++; StartNewLevel(); }
     void NextLevel() { currentLevel++; StartNewLevel(); }
 
@@ -515,5 +501,10 @@ public class GameController : MonoBehaviour
         tubes.Add(new List<int>());
         btnAddTube.style.display = DisplayStyle.None;
         DrawBoard();
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (sfxSource != null && clip != null) sfxSource.PlayOneShot(clip);
     }
 }

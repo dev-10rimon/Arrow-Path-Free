@@ -1,13 +1,13 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <Style src="GlobalStyles.uss" />
     
-    <!-- 🟢 LIVE BACKGROUND LAYER -->
+    <!-- 🟢 লাইভ ব্যাকগ্রাউন্ড লেয়ার (সবার পেছনে থাকবে) -->
     <ui:VisualElement name="live-bg-layer" class="live-bg-layer" picking-mode="Ignore" />
 
-    <!-- Main Container -->
+    <!-- Main UI Container -->
     <ui:VisualElement name="main-container" class="main-container">
 
-        <!-- Header -->
+        <!-- Header (Top Bar) -->
         <ui:VisualElement class="header">
             <ui:VisualElement class="logo-area">
                 <ui:Label text="BALL SORT" class="logo-title" />
@@ -40,7 +40,7 @@
         <!-- Game Board -->
         <ui:VisualElement name="game-board" class="game-board" />
 
-        <!-- Footer -->
+        <!-- Footer (Bottom Bar) -->
         <ui:VisualElement class="footer">
             <ui:VisualElement class="footer-left">
                 <ui:Label text="Difficulty:" class="footer-label" />
@@ -53,10 +53,10 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Victory Modal -->
+        <!-- Victory Modal (Overlay) -->
         <ui:VisualElement name="victory-modal" class="modal-overlay" style="display: none;">
             <ui:VisualElement class="modal-card">
-                <ui:Label text="TROPHY" class="modal-icon" />
+                <ui:Label text="★" class="modal-icon" />
                 <ui:Label text="Level Cleared!" class="modal-title" />
                 <ui:Label text="Fantastic! All colored balls have been sorted cleanly." class="modal-desc" />
                 
@@ -76,7 +76,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Layers -->
+        <!-- Layers for Animations and Particles -->
         <ui:VisualElement name="anim-layer" class="absolute-layer" picking-mode="Ignore" />
         <ui:VisualElement name="effect-layer" class="absolute-layer" picking-mode="Ignore" />
     </ui:VisualElement>
