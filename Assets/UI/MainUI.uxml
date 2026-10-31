@@ -1,0 +1,83 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="GlobalStyles.uss" />
+    
+    <!-- 🟢 LIVE BACKGROUND LAYER -->
+    <ui:VisualElement name="live-bg-layer" class="live-bg-layer" picking-mode="Ignore" />
+
+    <!-- Main Container -->
+    <ui:VisualElement name="main-container" class="main-container">
+
+        <!-- Header -->
+        <ui:VisualElement class="header">
+            <ui:VisualElement class="logo-area">
+                <ui:Label text="BALL SORT" class="logo-title" />
+                <ui:Label text="DELUXE PUZZLE EDITION" class="logo-sub" />
+            </ui:VisualElement>
+            
+            <ui:VisualElement class="stats-area">
+                <ui:VisualElement class="stat-box">
+                    <ui:Label text="LEVEL" class="stat-label" />
+                    <ui:Label name="lbl-level" text="1" class="stat-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="divider" />
+                <ui:VisualElement class="stat-box">
+                    <ui:Label text="MOVES" class="stat-label" />
+                    <ui:Label name="lbl-moves" text="0" class="stat-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="divider" />
+                <ui:VisualElement class="stat-box">
+                    <ui:Label text="TIME" class="stat-label" />
+                    <ui:Label name="lbl-time" text="00:00" class="stat-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="controls-area">
+                <ui:Button name="btn-undo" text="Undo" class="btn-neon" />
+                <ui:Button name="btn-restart" text="Restart" class="btn-neon" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Game Board -->
+        <ui:VisualElement name="game-board" class="game-board" />
+
+        <!-- Footer -->
+        <ui:VisualElement class="footer">
+            <ui:VisualElement class="footer-left">
+                <ui:Label text="Difficulty:" class="footer-label" />
+                <ui:DropdownField name="dropdown-difficulty" choices="Easy,Medium,Hard" index="1" class="dropdown" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="footer-right">
+                <ui:Button name="btn-add-tube" text="+ Add Extra Tube" class="btn-neon" />
+                <ui:Button name="btn-next-level" text="Next Level >" class="btn-primary" style="display: none;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Victory Modal -->
+        <ui:VisualElement name="victory-modal" class="modal-overlay" style="display: none;">
+            <ui:VisualElement class="modal-card">
+                <ui:Label text="TROPHY" class="modal-icon" />
+                <ui:Label text="Level Cleared!" class="modal-title" />
+                <ui:Label text="Fantastic! All colored balls have been sorted cleanly." class="modal-desc" />
+                
+                <ui:VisualElement class="modal-stats">
+                    <ui:VisualElement class="modal-stat-box">
+                        <ui:Label text="TOTAL MOVES" class="modal-stat-label" />
+                        <ui:Label name="final-moves" text="0" class="modal-stat-value text-sky" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="divider" />
+                    <ui:VisualElement class="modal-stat-box">
+                        <ui:Label text="TIME TAKEN" class="modal-stat-label" />
+                        <ui:Label name="final-time" text="00:00" class="modal-stat-value text-emerald" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:Button name="btn-modal-continue" text="Continue to Next Level >" class="btn-modal-continue" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Layers -->
+        <ui:VisualElement name="anim-layer" class="absolute-layer" picking-mode="Ignore" />
+        <ui:VisualElement name="effect-layer" class="absolute-layer" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

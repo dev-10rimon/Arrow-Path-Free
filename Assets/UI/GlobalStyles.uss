@@ -1,0 +1,218 @@
+/* ================= GLOBAL ================= */
+.live-bg-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+}
+
+.main-container {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+.absolute-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%; height: 100%;
+}
+
+.text-sky { color: #38bdf8; }
+.text-purple { color: #c084fc; }
+.text-emerald { color: #34d399; }
+
+/* ================= HEADER ================= */
+.header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 95%;
+    max-width: 1200px;
+    background-color: rgba(15, 23, 42, 0.7);
+    border-radius: 16px;
+    border-width: 1px;
+    border-color: #1e293b;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+}
+
+.logo-title { font-size: 28px; -unity-font-style: bold; color: #38bdf8; }
+.logo-sub { font-size: 10px; color: #94a3b8; -unity-font-style: bold; letter-spacing: 1px; }
+
+.stats-area {
+    flex-direction: row;
+    align-items: center;
+    background-color: #020617;
+    padding: 10px 25px;
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: #1e293b;
+}
+.stat-box { align-items: center; margin: 0 15px; }
+.stat-label { font-size: 10px; color: #94a3b8; -unity-font-style: bold; }
+.stat-value { font-size: 22px; -unity-font-style: bold; color: white; }
+.divider { width: 1px; height: 30px; background-color: #1e293b; }
+
+.controls-area { flex-direction: row; }
+.btn-neon {
+    background-color: #1e293b;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: #334155;
+    color: #cbd5e1;
+    padding: 10px 18px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-left: 10px;
+    transition-property: background-color, border-color;
+    transition-duration: 0.1s;
+}
+.btn-neon:hover { background-color: #334155; border-color: #475569; }
+
+/* ================= GAME BOARD ================= */
+.game-board {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1200px;
+    flex-grow: 1;
+    padding-bottom: 20px;
+}
+
+.tube-container {
+    width: 76px;
+    height: 280px;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
+    justify-content: flex-end;
+    transition-property: translate;
+    transition-duration: 0.2s;
+}
+
+.tube-rim {
+    width: 92px; height: 14px;
+    background-color: #1e293b; border-radius: 7px;
+    border-width: 2px; border-color: #475569;
+    margin-bottom: -7px; z-index: 2;
+    transition-property: background-color, border-color, box-shadow;
+    transition-duration: 0.2s;
+}
+
+.tube-body {
+    width: 76px; height: 260px;
+    border-width: 3px; border-color: #475569;
+    border-top-width: 0;
+    border-bottom-left-radius: 38px;
+    border-bottom-right-radius: 38px;
+    background-color: rgba(30, 41, 59, 0.4);
+    flex-direction: column-reverse;
+    align-items: center;
+    padding-bottom: 8px;
+    z-index: 1;
+    transition-property: border-color, background-color, box-shadow;
+    transition-duration: 0.2s;
+}
+
+.tube-container.selected .tube-body {
+    border-color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.1);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+.tube-container.selected .tube-rim { border-color: #7dd3fc; background-color: #0ea5e9; }
+
+.tube-container.completed .tube-body {
+    border-color: #4ade80;
+    background-color: rgba(74, 222, 128, 0.1);
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+}
+.tube-container.completed .tube-rim { border-color: #86efac; background-color: #22c55e; }
+
+/* 3D Glossy Balls */
+.ball {
+    width: 58px; height: 58px;
+    border-radius: 29px; margin-top: 3px;
+    position: relative;
+    border-width: 1px; border-color: rgba(0, 0, 0, 0.6);
+    box-shadow: inset -4px -4px 8px rgba(0, 0, 0, 0.6), inset 4px 4px 8px rgba(255, 255, 255, 0.4);
+    transition-property: translate;
+    transition-duration: 0.15s;
+}
+
+.ball-highlight {
+    position: absolute; top: 7px; left: 11px;
+    width: 20px; height: 11px; border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    rotate: -25deg;
+}
+
+/* Lift Animation */
+.ball.selected-top {
+    translate: 0 -35px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8), inset -4px -4px 8px rgba(0, 0, 0, 0.6), inset 4px 4px 8px rgba(255, 255, 255, 0.4);
+}
+
+/* Colors */
+.ball-red { background-color: #ee5253; }
+.ball-blue { background-color: #0abde3; }
+.ball-green { background-color: #10ac84; }
+.ball-yellow { background-color: #fdcb6e; }
+.ball-purple { background-color: #9c88ff; }
+.ball-orange { background-color: #ff7979; }
+.ball-pink { background-color: #f368e0; }
+.ball-cyan { background-color: #0984e3; }
+
+.flying-ball {
+    position: absolute; width: 58px; height: 58px;
+    border-radius: 29px; z-index: 1000;
+    box-shadow: inset -4px -4px 8px rgba(0, 0, 0, 0.6), inset 4px 4px 8px rgba(255, 255, 255, 0.4);
+}
+
+/* ================= FOOTER ================= */
+.footer {
+    flex-direction: row; justify-content: space-between; align-items: center;
+    width: 95%; max-width: 1200px;
+    background-color: rgba(15, 23, 42, 0.7);
+    border-radius: 16px; border-width: 1px; border-color: #1e293b;
+    padding: 15px 25px; margin-top: 20px;
+}
+.footer-left { flex-direction: row; align-items: center; }
+.footer-label { font-size: 14px; color: #94a3b8; -unity-font-style: bold; margin-right: 10px; }
+.dropdown { width: 150px; background-color: #020617; border-width: 1px; border-color: #1e293b; border-radius: 8px; color: white; }
+
+.footer-right { flex-direction: row; align-items: center; }
+.btn-primary {
+    background-color: #0ea5e9; color: white; border-radius: 10px;
+    padding: 10px 20px; font-size: 14px; -unity-font-style: bold;
+    border-width: 0; margin-left: 10px;
+}
+.btn-primary:hover { background-color: #38bdf8; }
+
+/* ================= VICTORY MODAL ================= */
+.modal-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(2, 6, 23, 0.85); align-items: center; justify-content: center; z-index: 2000;
+}
+.modal-card {
+    width: 400px; background-color: #0f172a; border-radius: 24px;
+    border-width: 1px; border-color: #1e293b; padding: 30px; align-items: center;
+}
+.modal-icon { font-size: 50px; color: #34d399; margin-bottom: 10px; }
+.modal-title { font-size: 28px; color: white; -unity-font-style: bold; margin-bottom: 5px; }
+.modal-desc { font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 20px; }
+.modal-stats {
+    flex-direction: row; justify-content: space-around; width: 100%;
+    background-color: #020617; border-radius: 16px; padding: 15px;
+    margin-bottom: 20px; border-width: 1px; border-color: #1e293b;
+}
+.modal-stat-box { align-items: center; }
+.modal-stat-label { font-size: 10px; color: #94a3b8; -unity-font-style: bold; }
+.modal-stat-value { font-size: 22px; -unity-font-style: bold; }
+.btn-modal-continue { width: 100%; background-color: #10b981; color: white; border-radius: 10px; padding: 15px; font-size: 16px; -unity-font-style: bold; border-width: 0; }
+.btn-modal-continue:hover { background-color: #34d399; }
