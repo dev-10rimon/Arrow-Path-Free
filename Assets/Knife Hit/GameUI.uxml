@@ -1,0 +1,73 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="KnifeHitGame.uss" />
+    
+    <ui:VisualElement name="root" class="root">
+        <!-- Dynamic Background -->
+        <ui:VisualElement name="background" class="background" />
+
+        <!-- Game Area -->
+        <ui:VisualElement name="game-area" class="game-area" />
+
+        <!-- HUD -->
+        <ui:VisualElement name="top-hud" class="top-hud" style="display: none;">
+            <ui:VisualElement>
+                <ui:Label name="stage-label" text="STAGE 1" class="label-tiny" />
+                <ui:Label name="boss-label" text="★ BOSS STAGE ★" class="label-boss" />
+            </ui:VisualElement>
+            <ui:VisualElement style="align-items:flex-end;">
+                <ui:Label text="SCORE" class="label-tiny" />
+                <ui:Label name="score-text" text="0" class="score-text" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="knives-indicator" class="knives-indicator" style="display: none;" />
+
+        <!-- Loading Panel -->
+        <ui:VisualElement name="loading-panel" class="panel">
+            <ui:Label text="KNIFE HIT" class="overlay-title" />
+            <ui:Label text="LOADING..." class="label-tiny" />
+            <ui:VisualElement class="loading-bar-bg">
+                <ui:VisualElement name="loading-bar-fill" class="loading-bar-fill" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Home Panel -->
+        <ui:VisualElement name="home-panel" class="panel" style="display: none;">
+            <ui:Label text="KNIFE HIT" class="overlay-title glow-text" />
+            <ui:Button name="btn-play" text="PLAY" class="menu-btn play-btn" />
+            <ui:Button name="btn-settings" text="SETTINGS" class="menu-btn" />
+            <ui:Button name="btn-exit" text="EXIT" class="menu-btn exit-btn" />
+        </ui:VisualElement>
+
+        <!-- Settings Panel -->
+        <ui:VisualElement name="settings-panel" class="panel" style="display: none;">
+            <ui:Label text="SETTINGS" class="overlay-title" />
+            <ui:Button name="btn-sound" text="SOUND: ON" class="menu-btn" />
+            <ui:Button name="btn-back" text="BACK" class="menu-btn" />
+        </ui:VisualElement>
+
+        <!-- Game Over Panel -->
+        <ui:VisualElement name="gameover-panel" class="panel" style="display: none;">
+            <ui:Label name="overlay-title" text="GAME OVER" class="overlay-title game-over" />
+            <ui:Label name="overlay-subtitle" text="You hit another knife!" class="label-tiny" />
+            
+            <ui:VisualElement name="stats-container" class="stats-container">
+                <ui:VisualElement class="stat-row">
+                    <ui:Label text="Stage Reached" class="stat-label" />
+                    <ui:Label name="final-stage" text="1" class="stat-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stat-row">
+                    <ui:Label text="Score" class="stat-label" />
+                    <ui:Label name="final-score" text="0" class="stat-value accent" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stat-row">
+                    <ui:Label text="Best Score" class="stat-label" />
+                    <ui:Label name="best-score" text="0" class="stat-value success" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <ui:Button name="btn-retry" text="RETRY" class="menu-btn play-btn" />
+            <ui:Button name="btn-home" text="HOME" class="menu-btn" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
