@@ -1,81 +1,67 @@
-.root {
-    flex-grow: 1;
-    background-color: rgb(10, 12, 22);
-    position: relative;
-    overflow: hidden;
-}
+.root { flex-grow: 1; background-color: rgb(10, 12, 22); position: relative; overflow: hidden; }
 .background { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
 .game-area { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
 
-/* HUD */
+/* নতুন HUD */
 .top-hud {
-    position: absolute; top: 30px; left: 24px; right: 24px;
-    flex-direction: row; justify-content: space-between;
+    position: absolute; top: 40px; left: 20px; right: 20px;
+    flex-direction: row; justify-content: space-between; align-items: flex-start;
 }
-.label-tiny { font-size: 12px; color: rgb(160, 174, 192); -unity-font-style: bold; letter-spacing: 2px; }
-.label-boss { font-size: 14px; color: rgb(251, 191, 36); -unity-font-style: bold; display: none; text-shadow: 0 0 10px rgb(251, 191, 36); }
-.label-boss.visible { display: flex; }
-.score-text { font-size: 40px; color: rgb(255, 255, 255); -unity-font-style: bold; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
+.hud-left { width: 100px; }
+.hud-right { width: 100px; align-items: flex-end; }
+.hud-center { align-items: center; margin-top: -10px; }
 
-.knives-indicator {
-    position: absolute; left: 24px; top: 45%;
-    translate: 0 -50%; flex-direction: column-reverse;
+.hud-label { font-size: 16px; color: rgb(255, 255, 255); -unity-font-style: bold; letter-spacing: 1px; }
+.hud-boss { font-size: 12px; color: rgb(251, 191, 36); -unity-font-style: bold; display: none; margin-top: 2px;}
+.hud-boss.visible { display: flex; }
+.hud-subtext { font-size: 11px; color: rgb(160, 174, 192); letter-spacing: 3px; margin-top: -5px;}
+.score-text { font-size: 46px; color: rgb(251, 191, 36); -unity-font-style: bold; text-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+
+.hud-btn {
+    width: 44px; height: 44px; font-size: 24px;
+    background-color: rgba(30, 41, 59, 0.8); border-radius: 22px;
+    border-width: 1px; border-color: rgba(255, 255, 255, 0.1);
+    color: white; -unity-text-align: middle-center; padding: 0; margin: 0;
 }
+.hud-btn:hover { background-color: rgba(51, 65, 85, 0.9); }
+
+.knives-indicator { position: absolute; left: 20px; top: 55%; translate: 0 -50%; flex-direction: column-reverse; }
 .knives-indicator > * { margin-top: 8px; }
 
-/* Panels (Glassmorphism) */
+/* Panels */
 .panel {
     position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-    background-color: rgba(15, 23, 42, 0.75);
-    align-items: center; justify-content: center;
-    padding: 24px;
+    background-color: rgba(15, 23, 42, 0.85);
+    align-items: center; justify-content: center; padding: 24px;
 }
-.overlay-title {
-    font-size: 48px; color: rgb(255, 255, 255);
-    -unity-font-style: bold; letter-spacing: 6px; margin-bottom: 30px;
-}
+.overlay-title { font-size: 48px; color: rgb(255, 255, 255); -unity-font-style: bold; letter-spacing: 6px; margin-bottom: 20px; }
 .glow-text { text-shadow: 0 0 20px rgb(251, 191, 36), 0 0 40px rgb(251, 191, 36); }
 .overlay-title.game-over { color: rgb(244, 63, 94); text-shadow: 0 0 20px rgb(244, 63, 94); }
+.label-tiny { font-size: 12px; color: rgb(160, 174, 192); -unity-font-style: bold; letter-spacing: 2px; }
 
-/* Menu Buttons */
+/* Buttons */
 .menu-btn {
     width: 260px; margin: 10px 0; padding: 16px 0;
     font-size: 20px; -unity-font-style: bold; letter-spacing: 3px;
     color: rgb(255, 255, 255); background-color: rgba(30, 41, 59, 0.8);
     border-radius: 50px; border-width: 2px; border-color: rgba(255, 255, 255, 0.1);
     -unity-text-align: middle-center;
-    transition: all 0.2s ease;
 }
 .menu-btn:hover { background-color: rgba(51, 65, 85, 0.9); border-color: rgba(255, 255, 255, 0.3); }
 .menu-btn:active { transform: scale(0.95); }
-
-.play-btn {
-    background-color: rgb(251, 191, 36); color: rgb(15, 23, 42);
-    border-color: rgb(251, 191, 36); box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-}
+.play-btn { background-color: rgb(251, 191, 36); color: rgb(15, 23, 42); border-color: rgb(251, 191, 36); box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
 .play-btn:hover { background-color: rgb(252, 211, 77); }
-
 .exit-btn { border-color: rgb(244, 63, 94); color: rgb(244, 63, 94); }
 .exit-btn:hover { background-color: rgba(244, 63, 94, 0.2); }
 
 /* Loading Bar */
-.loading-bar-bg {
-    width: 280px; height: 8px; background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px; overflow: hidden; margin-top: 20px;
-}
-.loading-bar-fill {
-    width: 0%; height: 100%; background-color: rgb(251, 191, 36);
-    box-shadow: 0 0 10px rgb(251, 191, 36);
-}
+.loading-bar-bg { width: 280px; height: 8px; background-color: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; margin-top: 20px; }
+.loading-bar-fill { width: 0%; height: 100%; background-color: rgb(251, 191, 36); box-shadow: 0 0 10px rgb(251, 191, 36); }
 
-/* Stats Container */
-.stats-container {
-    width: 300px; background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 20px; padding: 24px; margin-bottom: 30px;
-    border-width: 1px; border-color: rgba(255,255,255,0.05);
-}
+/* Stats */
+.stats-container { width: 300px; background-color: rgba(0, 0, 0, 0.4); border-radius: 20px; padding: 24px; margin-bottom: 30px; border-width: 1px; border-color: rgba(255,255,255,0.05); }
 .stat-row { flex-direction: row; justify-content: space-between; margin: 12px 0; }
 .stat-label { color: rgb(148, 163, 184); font-size: 16px; }
 .stat-value { color: white; -unity-font-style: bold; font-size: 20px; }
-.stat-value.accent { color: rgb(251, 191, 36); text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
-.stat-value.success { color: rgb(52, 211, 153); text-shadow: 0 0 10px rgba(52, 211, 153, 0.5); }
+.stat-value.accent { color: rgb(251, 191, 36); }
+.stat-value.success { color: rgb(52, 211, 153); }

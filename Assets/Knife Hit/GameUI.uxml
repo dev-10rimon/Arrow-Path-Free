@@ -2,21 +2,21 @@
     <Style src="KnifeHitGame.uss" />
     
     <ui:VisualElement name="root" class="root">
-        <!-- Dynamic Background -->
         <ui:VisualElement name="background" class="background" />
-
-        <!-- Game Area -->
         <ui:VisualElement name="game-area" class="game-area" />
 
-        <!-- HUD -->
+        <!-- নতুন HUD -->
         <ui:VisualElement name="top-hud" class="top-hud" style="display: none;">
-            <ui:VisualElement>
-                <ui:Label name="stage-label" text="STAGE 1" class="label-tiny" />
-                <ui:Label name="boss-label" text="★ BOSS STAGE ★" class="label-boss" />
+            <ui:VisualElement class="hud-left">
+                <ui:Label name="stage-label" text="STAGE 1" class="hud-label" />
+                <ui:Label name="boss-label" text="★ BOSS ★" class="hud-boss" />
             </ui:VisualElement>
-            <ui:VisualElement style="align-items:flex-end;">
-                <ui:Label text="SCORE" class="label-tiny" />
+            <ui:VisualElement class="hud-center">
                 <ui:Label name="score-text" text="0" class="score-text" />
+                <ui:Label text="SCORE" class="hud-subtext" />
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-right">
+                <ui:Button name="btn-hud-settings" text="⚙" class="hud-btn" />
             </ui:VisualElement>
         </ui:VisualElement>
 
@@ -24,7 +24,7 @@
 
         <!-- Loading Panel -->
         <ui:VisualElement name="loading-panel" class="panel">
-            <ui:Label text="KNIFE HIT" class="overlay-title" />
+            <ui:Label text="KNIFE HIT" class="overlay-title glow-text" />
             <ui:Label text="LOADING..." class="label-tiny" />
             <ui:VisualElement class="loading-bar-bg">
                 <ui:VisualElement name="loading-bar-fill" class="loading-bar-fill" />

@@ -25,7 +25,9 @@ public class KnifeHitGame : MonoBehaviour
 
     readonly List<float> stuckAngles = new();
     readonly List<KnifeVisual> stuckVisuals = new();
+
     KnifeVisual flyingKnife = null;
+    KnifeVisual readyKnife = null;
     float flyingY, throwStartY;
 
     readonly List<ShatterPiece> shatterPieces = new();
@@ -37,7 +39,7 @@ public class KnifeHitGame : MonoBehaviour
     VisualElement topHud, knivesIndicator, statsContainer;
     Label stageLabel, bossLabel, scoreText, overlayTitle, finalStage, finalScore, bestScore;
 
-    Button btnPlay, btnSettings, btnExit, btnSound, btnBack, btnRetry, btnHome;
+    Button btnPlay, btnSettings, btnExit, btnSound, btnBack, btnRetry, btnHome, btnHudSettings;
     VisualElement loadingFill;
     BackgroundVisual bgVisual;
     LogVisual logVisual;
@@ -83,6 +85,7 @@ public class KnifeHitGame : MonoBehaviour
         btnBack = root.Q<Button>("btn-back");
         btnRetry = root.Q<Button>("btn-retry");
         btnHome = root.Q<Button>("btn-home");
+        btnHudSettings = root.Q<Button>("btn-hud-settings");
 
         background.pickingMode = PickingMode.Ignore;
 
@@ -93,6 +96,7 @@ public class KnifeHitGame : MonoBehaviour
         btnHome.clicked += () => SwitchState(State.Home);
         btnExit.clicked += QuitGame;
         btnSound.clicked += ToggleSound;
+        btnHudSettings.clicked += () => SwitchState(State.Settings);
 
         gameArea.RegisterCallback<PointerDownEvent>(OnTap);
         gameArea.RegisterCallback<GeometryChangedEvent>(_ => { if (currentState == State.Playing) RecomputeLayout(); });
@@ -111,8 +115,6 @@ public class KnifeHitGame : MonoBehaviour
     void SimulateLoading()
     {
         float progress = 0f;
-
-        // ✅ FIX: timer ভেরিয়েবলটি আগে ডিক্লেয়ার করা হয়েছে
         IVisualElementScheduledItem timer = null;
         timer = root.schedule.Execute(() => {
             progress += 10f;
@@ -161,6 +163,7 @@ public class KnifeHitGame : MonoBehaviour
         stageClearing = false;
 
         if (logVisual != null) { logVisual.RemoveFromHierarchy(); logVisual = null; }
+        if (readyKnife != null) { readyKnife.RemoveFromHierarchy(); readyKnife = null; }
         foreach (var kv in stuckVisuals) kv.RemoveFromHierarchy();
         stuckVisuals.Clear(); stuckAngles.Clear();
 
@@ -178,8 +181,8 @@ public class KnifeHitGame : MonoBehaviour
         if (w <= 100 || h <= 100) return;
 
         logCenter = new Vector2(w * .5f, h * .3f);
-        logRadius = Mathf.Min(w, h) * .16f;
-        throwStartY = h * .85f;
+        logRadius = Mathf.Min(w, h) * 0.22f;
+        throwStartY = h * .82f;
 
         if (logVisual == null)
         {
@@ -191,6 +194,30 @@ public class KnifeHitGame : MonoBehaviour
         logVisual.style.left = logCenter.x - logRadius;
         logVisual.style.top = logCenter.y - logRadius;
         logVisual.style.display = DisplayStyle.Flex;
+
+        // ✅ FIX: EaseOutQuad এর বদলে EaseOut ব্যবহার করা হয়েছে
+        logVisual.style.transitionProperty = new List<StylePropertyName> { "scale" };
+        logVisual.style.transitionDuration = new List<TimeValue> { new TimeValue(80, TimeUnit.Millisecond) };
+        logVisual.style.transitionTimingFunction = new List<EasingFunction> { new EasingFunction(EasingMode.EaseOut) };
+
+        logVisual.BringToFront();
+        CreateReadyKnife();
+    }
+
+    void CreateReadyKnife()
+    {
+        if (readyKnife != null) return;
+        if (remainingKnives <= 0 || flyingKnife != null) return;
+
+        readyKnife = new KnifeVisual();
+        readyKnife.style.width = KNIFE_W;
+        readyKnife.style.height = KNIFE_H;
+        readyKnife.style.left = logCenter.x - KNIFE_W * .5f;
+        readyKnife.style.top = throwStartY;
+        readyKnife.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(0));
+        gameArea.Add(readyKnife);
+
+        readyKnife.BringToFront();
     }
 
     void OnTap(PointerDownEvent evt) { if (currentState == State.Playing && !stageClearing) TryThrow(); }
@@ -227,11 +254,8 @@ public class KnifeHitGame : MonoBehaviour
         for (int i = shatterPieces.Count - 1; i >= 0; i--)
         {
             var sp = shatterPieces[i];
-            sp.vy += 1400 * dt;
-            sp.x += sp.vx * dt; sp.y += sp.vy * dt;
-            sp.rot += sp.vrot * dt;
-            sp.visual.style.left = sp.x - sp.size * .5f;
-            sp.visual.style.top = sp.y - sp.size * .5f;
+            sp.vy += 1400 * dt; sp.x += sp.vx * dt; sp.y += sp.vy * dt; sp.rot += sp.vrot * dt;
+            sp.visual.style.left = sp.x - sp.size * .5f; sp.visual.style.top = sp.y - sp.size * .5f;
             sp.visual.style.rotate = new Rotate(new Angle(sp.rot, AngleUnit.Degree));
             if (sp.y > gameArea.resolvedStyle.height + 200)
             { sp.visual.RemoveFromHierarchy(); shatterPieces.RemoveAt(i); }
@@ -251,6 +275,9 @@ public class KnifeHitGame : MonoBehaviour
     void TryThrow()
     {
         if (flyingKnife != null || remainingKnives <= 0) return;
+
+        if (readyKnife != null) { readyKnife.RemoveFromHierarchy(); readyKnife = null; }
+
         remainingKnives--; UpdateKnivesUI();
 
         flyingKnife = new KnifeVisual();
@@ -260,6 +287,8 @@ public class KnifeHitGame : MonoBehaviour
         flyingKnife.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(0));
         flyingY = throwStartY;
         gameArea.Add(flyingKnife);
+
+        flyingKnife.BringToFront();
     }
 
     void ResolveHit()
@@ -278,6 +307,19 @@ public class KnifeHitGame : MonoBehaviour
         kv.style.width = KNIFE_W; kv.style.height = KNIFE_H;
         kv.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(0));
         gameArea.Add(kv); stuckVisuals.Add(kv);
+
+        if (logVisual != null)
+        {
+            logVisual.BringToFront();
+
+            // ✅ Pop-up (Bump) Effect
+            logVisual.style.scale = new Scale(new Vector2(1.1f, 1.1f));
+
+            logVisual.schedule.Execute(() => {
+                if (logVisual != null) logVisual.style.scale = new Scale(Vector2.one);
+            }).StartingIn(80);
+        }
+
         UpdateStuckPositions();
 
         if (soundOn) audioSource.PlayOneShot(hitSnd);
@@ -288,11 +330,17 @@ public class KnifeHitGame : MonoBehaviour
             if (soundOn) audioSource.PlayOneShot(clearSnd);
             BreakBoard();
         }
+        else
+        {
+            CreateReadyKnife();
+        }
     }
 
     void BreakBoard()
     {
         if (logVisual != null) logVisual.style.display = DisplayStyle.None;
+        if (readyKnife != null) { readyKnife.RemoveFromHierarchy(); readyKnife = null; }
+
         foreach (var kv in stuckVisuals) kv.RemoveFromHierarchy();
         stuckVisuals.Clear(); stuckAngles.Clear();
 
@@ -334,6 +382,7 @@ public class KnifeHitGame : MonoBehaviour
             InitStage(stage + 1);
             if (logVisual != null) logVisual.style.display = DisplayStyle.Flex;
             stageClearing = false;
+            CreateReadyKnife();
         }).StartingIn(1200);
     }
 
