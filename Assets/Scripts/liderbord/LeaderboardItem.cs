@@ -32,7 +32,12 @@ public class LeaderboardItem : MonoBehaviour
             RefreshLocalPlayerData();
         }
     }
-
+    // কোড থেকে ডাইনামিক নাম আপডেট করার জন্য এটি যোগ করুন
+    public void UpdateName(string newName)
+    {
+        _playerName = newName;
+        if (_nameText != null) _nameText.text = _playerName;
+    }
     private void InitializeData()
     {
         if (_isLocalPlayer)
