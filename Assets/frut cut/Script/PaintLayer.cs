@@ -9,8 +9,6 @@ public class PaintLayer : VisualElement
     {
         pickingMode = PickingMode.Ignore;
         style.position = Position.Absolute;
-        style.left = 0; style.top = 0; style.right = 0; style.bottom = 0;
-        usageHints = UsageHints.DynamicTransform;
         generateVisualContent += ctx => OnPaint?.Invoke(ctx.painter2D);
     }
 }

@@ -1,31 +1,75 @@
 .root { flex-grow: 1; background-color: #0b0f19; }
 .playfield, .input-catcher { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
 
-.panel {
-  flex-direction: row; align-items: center;
-  background-color: rgba(15, 23, 42, 0.85);
-  border-width: 1px; border-color: rgba(245, 158, 11, 0.3);
-  border-radius: 18px; padding: 8px 14px; margin: 6px;
-}
-.big-amber { font-size: 30px; color: #fbbf24; -unity-font-style: bold; }
-.big-green { font-size: 24px; color: #34d399; -unity-font-style: bold; }
-.cap { font-size: 11px; color: #fcd34d; }
+/* Loading Screen */
+.loading-wrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #0b0f19; align-items: center; justify-content: center; }
+.loading-text { font-size: 20px; color: #94a3b8; margin-top: 10px; }
 
-.modal-wrap {
-  position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-  align-items: center; justify-content: center;
+/* HUD */
+.hud { position: absolute; left: 0; top: 0; right: 0; padding: 12px; }
+.hud-top-row { flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }
+
+/* Score & Lives Panel */
+.panel { 
+    flex-direction: row; 
+    align-items: center; 
+    background-color: rgba(15, 23, 42, 0.85); 
+    border-width: 1px; 
+    border-color: rgba(255, 255, 255, 0.1); 
+    border-radius: 16px; 
+    padding: 6px 16px; 
 }
-.modal {
-  width: 560px; padding: 24px;
-  background-color: rgba(15, 23, 42, 0.9);
-  border-width: 1px; border-color: rgba(245, 158, 11, 0.4);
-  border-radius: 28px; align-items: center;
+.panel-col { flex-direction: column; margin-right: 16px; }
+.big-amber { font-size: 24px; color: #fbbf24; -unity-font-style: bold; }
+.big-green { font-size: 18px; color: #34d399; -unity-font-style: bold; }
+.cap { font-size: 10px; color: #94a3b8; letter-spacing: 1px; }
+
+/* Hearts Box */
+.divider { width: 1px; height: 30px; background-color: rgba(255, 255, 255, 0.2); margin-right: 12px; margin-left: 4px; }
+.lives-box { flex-direction: row; align-items: center; flex-shrink: 0; }
+
+/* Settings Button */
+.gear-btn { 
+    width: 44px; height: 44px; 
+    border-radius: 22px; 
+    background-color: rgba(30, 41, 59, 0.85); 
+    border-width: 1px; 
+    border-color: rgba(255, 255, 255, 0.1); 
+    color: white; 
+    font-size: 20px;
+    align-items: center; 
+    justify-content: center;
+    transition-property: scale; transition-duration: 0.1s;
 }
-.title { font-size: 44px; -unity-font-style: bold; color: #fbbf24; }
-.primary {
-  width: 100%; height: 60px; margin-top: 12px; border-radius: 18px;
-  background-color: #10b981; color: white; font-size: 20px; -unity-font-style: bold;
+.gear-btn:hover { scale: 1.1; }
+
+/* Settings Modal Grid */
+.settings-grid { flex-direction: column; width: 100%; margin-bottom: 16px; }
+.mode-btn { 
+    width: 100%; 
+    margin: 4px 0; 
+    padding: 12px; 
+    border-radius: 12px; 
+    background-color: rgba(30, 41, 59, 0.8); 
+    border-width: 2px; 
+    border-color: #475569; 
+    color: white; 
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
 }
-.pill { border-radius: 16px; padding: 8px 14px; }
-.pill.amber { background-color: #f59e0b; color: white; }
-.pill.green { background-color: #064e3b; color: #6ee7b7; border-width: 1px; border-color: #10b981; }
+.mode-btn:hover { scale: 1.02; border-color: #94a3b8; }
+
+/* Modals */
+.modal-wrap { position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.75); padding: 20px; }
+.modal { width: 100%; max-width: 380px; padding: 24px; background-color: rgba(15, 23, 42, 0.98); border-width: 2px; border-color: rgba(245, 158, 11, 0.4); border-radius: 24px; align-items: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
+.title { font-size: 32px; -unity-font-style: bold; color: #fbbf24; margin: 8px 0; text-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); text-align: center; }
+.desc { font-size: 14px; color: #cbd5e1; margin-bottom: 24px; text-align: center; white-space: normal;}
+
+.primary { width: 100%; height: 56px; margin-top: 10px; border-radius: 16px; background-image: linear-gradient(90deg, #10b981, #06b6d4); color: white; font-size: 18px; -unity-font-style: bold; border-width: 0; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition-property: scale, filter; transition-duration: 0.1s; }
+.primary:hover { scale: 1.02; filter: brightness(1.1); }
+.primary:active { scale: 0.95; }
+
+.score-grid { flex-direction: row; background-color: rgba(2, 6, 23, 0.8); border-radius: 16px; padding: 16px; width: 100%; margin: 12px 0 20px 0; border-width: 1px; border-color: #1e293b; }
+.score-col { flex-grow: 1; align-items: center; }

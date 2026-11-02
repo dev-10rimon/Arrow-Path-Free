@@ -1,47 +1,86 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
   <Style src="style.uss" />
-  <ui:VisualElement name="root" class="root">
-    <ui:VisualElement name="playfield" class="playfield" picking-mode="Ignore" />
-    <ui:VisualElement name="input-catcher" class="input-catcher" picking-mode="Position" />
+    <ui:VisualElement name="root" class="root">
+        
+        <ui:VisualElement name="playfield" class="playfield" picking-mode="Ignore" />
+        <ui:VisualElement name="input-catcher" class="input-catcher" picking-mode="Position" />
 
-    <ui:VisualElement name="hud" class="hud" picking-mode="Ignore">
-      <ui:VisualElement class="hud-row">
-        <ui:VisualElement class="panel">
-          <ui:Label text="স্কোর" class="cap" />
-          <ui:Label name="score-value" text="0" class="big-amber" />
-          <ui:Label text="সেরা" class="cap" />
-          <ui:Label name="best-value" text="0" class="big-green" />
-        </ui:VisualElement>
-        <ui:VisualElement class="hud-row-right">
-          <ui:VisualElement name="lives-container" class="panel lives" />
-          <ui:Button name="btn-mode" class="pill green" text="🌿 সহজ মোড" />
-          <ui:Button name="btn-sound" class="pill" text="🔊" />
-          <ui:Button name="btn-restart" class="pill amber" text="রিস্টার্ট" />
-        </ui:VisualElement>
-      </ui:VisualElement>
-    </ui:VisualElement>
+        <ui:VisualElement name="hud" class="hud" picking-mode="Ignore">
+            <ui:VisualElement class="hud-top-row">
+                <ui:VisualElement class="panel">
+                    <ui:VisualElement class="panel-col">
+                        <ui:Label text="SCORE" class="cap" />
+                        <ui:Label name="score-value" text="0" class="big-amber" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="panel-col" style="margin-right: 0;">
+                        <ui:Label text="BEST" class="cap" />
+                        <ui:Label name="best-value" text="0" class="big-green" />
+                    </ui:VisualElement>
+                    
+                    <ui:VisualElement class="divider" />
+                    <ui:VisualElement name="lives-container" class="lives-box" />
+                </ui:VisualElement>
 
-    <ui:VisualElement name="start-modal" class="modal-wrap">
-      <ui:VisualElement class="modal">
-        <ui:Label text="FRUIT SLASHER" class="title" />
-        <ui:Label text="ফলগুলো বড় ও ধীরে উড়বে। ছোঁয়ালেই কাটা যাবে!" class="desc" />
-        <ui:VisualElement class="mode-grid">
-          <ui:Button name="btn-easy-sel" text="🌿 সহজ মোড" class="mode-btn" />
-          <ui:Button name="btn-zen-sel"  text="🧘 জেন মোড" class="mode-btn" />
+                <ui:Button name="btn-settings" class="pill gear-btn" text="⚙️" />
+            </ui:VisualElement>
         </ui:VisualElement>
-        <ui:Button name="btn-play" text="খেলা শুরু করুন 🍉" class="primary" />
-      </ui:VisualElement>
-    </ui:VisualElement>
 
-    <ui:VisualElement name="gameover-modal" class="modal-wrap" style="display:none">
-      <ui:VisualElement class="modal">
-        <ui:Label name="gameover-badge" text="🌟 দারুণ খেলেছেন!" class="cap" />
-        <ui:Label text="খেলা সমাপ্ত" class="title" />
-        <ui:Label name="final-score" text="0" class="big-amber" />
-        <ui:Label name="best-score" text="0" class="big-green" />
-        <ui:Button name="btn-again" text="আবার খেলুন 🔄" class="primary" />
-        <ui:Button name="btn-zen-over" text="🧘 রিল্যাক্স মোডে খেলুন" class="pill" />
-      </ui:VisualElement>
+        <!-- Start Modal -->
+        <ui:VisualElement name="start-modal" class="modal-wrap" picking-mode="Ignore">
+            <ui:VisualElement class="modal" picking-mode="Position">
+                <ui:Label text="FRUIT SLASHER" class="title" />
+                <ui:Label text="Slice the fruits as they fly up. Don't miss!" class="desc" />
+                <ui:Button name="btn-play" text="START GAME 🍉" class="primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Settings Modal -->
+        <ui:VisualElement name="settings-modal" class="modal-wrap" style="display:none" picking-mode="Ignore">
+            <ui:VisualElement class="modal" picking-mode="Position">
+                <ui:Label text="SETTINGS" class="title" />
+                <ui:VisualElement class="settings-grid">
+                    <ui:Button name="btn-mode" class="mode-btn">
+                        <ui:Label name="mode-icon" text="🌿" />
+                        <ui:Label name="mode-label" text="Easy Mode" />
+                    </ui:Button>
+                    <ui:Button name="btn-sound" class="mode-btn">
+                        <ui:Label name="sound-icon" text="🔊" />
+                        <ui:Label text="Sound" />
+                    </ui:Button>
+                    <ui:Button name="btn-restart" class="mode-btn" text="Restart Game 🔄" />
+                    <ui:Button name="btn-home-settings" class="mode-btn" text="Home 🏠" />
+                    <ui:Button name="btn-exit" class="mode-btn" text="Exit ❌" />
+                </ui:VisualElement>
+                <ui:Button name="btn-close-settings" class="primary" text="CLOSE" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Game Over Modal -->
+        <ui:VisualElement name="gameover-modal" class="modal-wrap" style="display:none" picking-mode="Ignore">
+            <ui:VisualElement class="modal" picking-mode="Position">
+                <ui:Label name="gameover-badge" text="🌟 Great Try!" class="cap-lg" />
+                <ui:Label text="GAME OVER" class="title" />
+                <ui:VisualElement class="score-grid">
+                    <ui:VisualElement class="score-col">
+                        <ui:Label text="SCORE" class="cap" />
+                        <ui:Label name="final-score" text="0" class="big-amber" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="score-col">
+                        <ui:Label text="BEST" class="cap" />
+                        <ui:Label name="best-score" text="0" class="big-green" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="btn-again" text="PLAY AGAIN 🔄" class="primary" />
+                <ui:Button name="btn-home-over" text="HOME 🏠" class="mode-btn" style="margin-top: 10px; width: 100%; border-radius: 16px;" />
+                <ui:Button name="btn-zen-over" text="🧘 Try Zen Mode" class="pill" style="margin-top: 10px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Loading Screen -->
+        <ui:VisualElement name="loading-screen" class="loading-wrap" picking-mode="Position">
+            <ui:Label text="FRUIT SLASHER" class="title" />
+            <ui:Label text="Loading..." class="loading-text" />
+        </ui:VisualElement>
+
     </ui:VisualElement>
-  </ui:VisualElement>
 </ui:UXML>
