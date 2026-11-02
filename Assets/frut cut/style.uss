@@ -1,0 +1,31 @@
+.root { flex-grow: 1; background-color: #0b0f19; }
+.playfield, .input-catcher { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+
+.panel {
+  flex-direction: row; align-items: center;
+  background-color: rgba(15, 23, 42, 0.85);
+  border-width: 1px; border-color: rgba(245, 158, 11, 0.3);
+  border-radius: 18px; padding: 8px 14px; margin: 6px;
+}
+.big-amber { font-size: 30px; color: #fbbf24; -unity-font-style: bold; }
+.big-green { font-size: 24px; color: #34d399; -unity-font-style: bold; }
+.cap { font-size: 11px; color: #fcd34d; }
+
+.modal-wrap {
+  position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+  align-items: center; justify-content: center;
+}
+.modal {
+  width: 560px; padding: 24px;
+  background-color: rgba(15, 23, 42, 0.9);
+  border-width: 1px; border-color: rgba(245, 158, 11, 0.4);
+  border-radius: 28px; align-items: center;
+}
+.title { font-size: 44px; -unity-font-style: bold; color: #fbbf24; }
+.primary {
+  width: 100%; height: 60px; margin-top: 12px; border-radius: 18px;
+  background-color: #10b981; color: white; font-size: 20px; -unity-font-style: bold;
+}
+.pill { border-radius: 16px; padding: 8px 14px; }
+.pill.amber { background-color: #f59e0b; color: white; }
+.pill.green { background-color: #064e3b; color: #6ee7b7; border-width: 1px; border-color: #10b981; }
